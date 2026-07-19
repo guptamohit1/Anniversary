@@ -1,49 +1,92 @@
-/* ==========================================================================
-   APP.JS — Anniversary Invitation Logic
-   - Envelope open animation
-   - Countdown timer
-   - YouTube IFrame audio player (autoplay)
-   - Scroll reveal animations
-   ========================================================================== */
-
 'use strict';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // CONFIG
 // ──────────────────────────────────────────────────────────────────────────────
-const EVENT_DATE = new Date('November 21, 2026 19:00:00');
+// Month is 0-indexed: 10 = November
+const EVENT_DATE = new Date(2026, 10, 21, 19, 0, 0);
 const YT_VIDEO_ID = 'bpXyk6sxsh4'; // Wang Da Naap — Ammy Virk
 
 // ──────────────────────────────────────────────────────────────────────────────
-// DOM REFERENCES
+// DOM REFERENCES (resolved after DOM loads)
 // ──────────────────────────────────────────────────────────────────────────────
-const landingScreen   = document.getElementById('landing-screen');
-const envelopeScene   = document.getElementById('envelope-scene');
-const envelopeWrapper = document.getElementById('envelope-wrapper');
-const tapToOpen       = document.getElementById('tap-to-open');
-const mainSite        = document.getElementById('main-site');
-
-const cdDays    = document.getElementById('cd-days');
-const cdHours   = document.getElementById('cd-hours');
-const cdMinutes = document.getElementById('cd-minutes');
-
-const btnPlayPause  = document.getElementById('btn-play-pause');
-const playIcon      = document.getElementById('play-icon');
-const pauseIcon     = document.getElementById('pause-icon');
-const progressFill  = document.getElementById('audio-progress-fill');
-const progressThumb = document.getElementById('audio-progress-thumb');
-const progressBar   = document.getElementById('audio-progress-bar');
-const currentTimeEl = document.getElementById('audio-current-time');
-const totalTimeEl   = document.getElementById('audio-total-time');
+let landingScreen, envelopeScene, envelopeWrapper, mainSite;
+let cdDays, cdHours, cdMinutes;
+let btnPlayPause, playIcon, pauseIcon;
+let progressFill, progressThumb, progressBar;
+let currentTimeEl, totalTimeEl;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // STATE
 // ──────────────────────────────────────────────────────────────────────────────
-let isOpened       = false;
-let ytPlayer       = null;
-let ytReady        = false;
-let isPlaying      = false;
+let isOpened         = false;
+let ytPlayer         = null;
+let ytReady          = false;
+let isPlaying        = false;
 let progressInterval = null;
+let playRequestedByUser = false; // set true when envelope is tapped
+
+// ──────────────────────────────────────────────────────────────────────────────
+// INIT — wait for DOM
+// ──────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+
+  landingScreen   = document.getElementById('landing-screen');
+  envelopeScene   = document.getElementById('envelope-scene');
+  envelopeWrapper = document.getElementById('envelope-wrapper');
+  mainSite        = document.getElementById('main-site');
+
+  cdDays    = document.getElementById('cd-days');
+  cdHours   = document.getElementById('cd-hours');
+  cdMinutes = document.getElementById('cd-minutes');
+
+  btnPlayPause  = document.getElementById('btn-play-pause');
+  playIcon      = document.getElementById('play-icon');
+  pauseIcon     = document.getElementById('pause-icon');
+  progressFill  = document.getElementById('audio-progress-fill');
+  progressThumb = document.getElementById('audio-progress-thumb');
+  progressBar   = document.getElementById('audio-progress-bar');
+  currentTimeEl = document.getElementById('audio-current-time');
+  totalTimeEl   = document.getElementById('audio-total-time');
+
+  // Wire envelope tap
+  envelopeWrapper.addEventListener('click', openInvitation);
+  envelopeWrapper.addEventListener('touchstart', openInvitation, { passive: true });
+
+  // Wire audio controls
+  if (btnPlayPause) {
+    btnPlayPause.addEventListener('click', () => {
+      if (!ytPlayer || !ytReady) return;
+      if (isPlaying) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    });
+  }
+
+  document.getElementById('btn-prev')?.addEventListener('click', () => {
+    if (!ytPlayer || !ytReady) return;
+    ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime() - 10));
+  });
+
+  document.getElementById('btn-next')?.addEventListener('click', () => {
+    if (!ytPlayer || !ytReady) return;
+    ytPlayer.seekTo(ytPlayer.getCurrentTime() + 10);
+  });
+
+  progressBar?.addEventListener('click', (e) => {
+    if (!ytPlayer || !ytReady) return;
+    const rect = progressBar.getBoundingClientRect();
+    const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const dur  = ytPlayer.getDuration();
+    if (dur) ytPlayer.seekTo(pct * dur);
+  });
+
+  // Show live countdown even on landing screen (updates every second)
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+});
 
 // ──────────────────────────────────────────────────────────────────────────────
 // ENVELOPE OPEN
@@ -52,42 +95,39 @@ function openInvitation() {
   if (isOpened) return;
   isOpened = true;
 
-  // Animate envelope open
+  // 1. Animate envelope flap
   envelopeScene.classList.add('open');
 
-  // After card peeks, fade out landing and reveal main
+  // 2. *** PLAY MUSIC IMMEDIATELY — still inside user-gesture event ***
+  //    Browsers allow play() calls that happen synchronously or very
+  //    close to the originating user gesture. This is the key fix.
+  playRequestedByUser = true;
+  if (ytReady && ytPlayer) {
+    ytPlayer.playVideo();
+  }
+  // If ytPlayer isn't ready yet, playRequestedByUser flag will trigger
+  // playback as soon as onYTReady fires (see below).
+
+  // 3. Fade out landing overlay
   setTimeout(() => {
     landingScreen.classList.add('fade-out');
   }, 1600);
 
+  // 4. Reveal main site + start scroll reveal
   setTimeout(() => {
     landingScreen.classList.add('hidden');
     mainSite.classList.remove('hidden');
-
-    // Boot systems
-    initCountdown();
     initScrollReveal();
-
-    // Start music (YouTube autoplay)
-    if (ytReady && ytPlayer) {
-      tryAutoplay();
-    }
   }, 2500);
 }
 
-// Tap targets
-envelopeWrapper.addEventListener('click', openInvitation);
-envelopeWrapper.addEventListener('touchstart', openInvitation, { passive: true });
-
 // ──────────────────────────────────────────────────────────────────────────────
-// COUNTDOWN TIMER
+// COUNTDOWN — updates every second
 // ──────────────────────────────────────────────────────────────────────────────
-function initCountdown() {
-  updateCountdown();
-  setInterval(updateCountdown, 60000); // update every minute
-}
-
 function updateCountdown() {
+  // Guard: elements may not exist yet during very early calls
+  if (!cdDays || !cdHours || !cdMinutes) return;
+
   const now  = Date.now();
   const diff = EVENT_DATE.getTime() - now;
 
@@ -98,9 +138,10 @@ function updateCountdown() {
     return;
   }
 
-  const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const totalSeconds = Math.floor(diff / 1000);
+  const days         = Math.floor(totalSeconds / 86400);
+  const hours        = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes      = Math.floor((totalSeconds % 3600) / 60);
 
   cdDays.textContent    = String(days).padStart(3, '0');
   cdHours.textContent   = String(hours).padStart(2, '0');
@@ -116,125 +157,82 @@ window.onYouTubeIframeAPIReady = function () {
     width: '1',
     videoId: YT_VIDEO_ID,
     playerVars: {
-      autoplay: 0,
-      controls: 0,
-      disablekb: 1,
-      enablejsapi: 1,
+      autoplay:       0,
+      controls:       0,
+      disablekb:      1,
+      enablejsapi:    1,
+      fs:             0,
       iv_load_policy: 3,
-      loop: 1,
+      loop:           1,
       modestbranding: 1,
-      origin: window.location.origin || 'http://localhost',
-      playlist: YT_VIDEO_ID,
+      playlist:       YT_VIDEO_ID,   // required for loop
+      rel:            0,
     },
     events: {
-      onReady: onYTReady,
+      onReady:       onYTReady,
       onStateChange: onYTStateChange,
-      onError: onYTError,
+      onError:       onYTError,
     },
   });
 };
 
-function onYTReady(event) {
+function onYTReady() {
   ytReady = true;
-  // Try to get total duration once loaded
-  const dur = event.target.getDuration();
-  if (dur) {
-    totalTimeEl.textContent = formatTime(dur);
-  }
 
-  // If user has already opened the invitation, start playing
-  if (isOpened) {
-    tryAutoplay();
+  // If user already tapped envelope before player was ready, play now.
+  // This is still acceptable — the user gesture initiated the request.
+  if (playRequestedByUser) {
+    ytPlayer.playVideo();
   }
 }
 
 function onYTStateChange(event) {
-  if (event.data === YT.PlayerState.PLAYING) {
-    setPlayUI(true);
-    startProgressPoll();
-    // Update total duration
-    const dur = ytPlayer.getDuration();
-    if (dur) totalTimeEl.textContent = formatTime(dur);
-  } else if (
-    event.data === YT.PlayerState.PAUSED ||
-    event.data === YT.PlayerState.ENDED
-  ) {
-    setPlayUI(false);
-    stopProgressPoll();
-    if (event.data === YT.PlayerState.ENDED) {
-      // Loop
+  switch (event.data) {
+    case YT.PlayerState.PLAYING:
+      setPlayUI(true);
+      startProgressPoll();
+      totalTimeEl.textContent = formatTime(ytPlayer.getDuration() || 0);
+      break;
+
+    case YT.PlayerState.PAUSED:
+      setPlayUI(false);
+      stopProgressPoll();
+      break;
+
+    case YT.PlayerState.ENDED:
+      // Loop manually (in case playlist loop glitches)
       ytPlayer.seekTo(0);
       ytPlayer.playVideo();
-    }
+      break;
+
+    default:
+      break;
   }
 }
 
 function onYTError(event) {
   console.warn('YouTube player error:', event.data);
-  // Gracefully: just show a note
   const wrap = document.getElementById('audio-player-wrap');
-  if (wrap) {
+  if (wrap && !wrap.querySelector('.yt-error-note')) {
     const note = document.createElement('p');
-    note.style.cssText = 'font-size:0.72rem;color:var(--muted);font-family:var(--font-sc);letter-spacing:0.1em;margin-top:0.6rem;';
-    note.textContent = 'Open in browser with network to hear the song.';
+    note.className = 'yt-error-note';
+    note.style.cssText = 'font-size:0.7rem;color:var(--muted);font-family:var(--font-sc);letter-spacing:0.1em;margin-top:0.5rem;opacity:0.7;';
+    note.textContent = 'Requires internet connection to stream the song.';
     wrap.appendChild(note);
   }
 }
 
-function tryAutoplay() {
-  if (!ytPlayer || !ytReady) return;
-  // Browsers may block autoplay without user gesture; we try anyway.
-  try {
-    ytPlayer.mute();          // muted autoplay is usually allowed
-    ytPlayer.playVideo();
-    // Unmute after a short delay to try getting audio
-    setTimeout(() => {
-      try { ytPlayer.unMute(); } catch(e) {}
-    }, 800);
-  } catch (e) {
-    console.warn('Autoplay blocked:', e);
-  }
-}
-
-// ── AUDIO CONTROLS ──
-btnPlayPause.addEventListener('click', () => {
-  if (!ytPlayer || !ytReady) return;
-  if (isPlaying) {
-    ytPlayer.pauseVideo();
-  } else {
-    ytPlayer.playVideo();
-  }
-});
-
-document.getElementById('btn-prev')?.addEventListener('click', () => {
-  if (!ytPlayer || !ytReady) return;
-  const curr = ytPlayer.getCurrentTime();
-  ytPlayer.seekTo(Math.max(0, curr - 10));
-});
-
-document.getElementById('btn-next')?.addEventListener('click', () => {
-  if (!ytPlayer || !ytReady) return;
-  const curr = ytPlayer.getCurrentTime();
-  ytPlayer.seekTo(curr + 10);
-});
-
-// Click on progress bar to seek
-progressBar?.addEventListener('click', (e) => {
-  if (!ytPlayer || !ytReady) return;
-  const rect = progressBar.getBoundingClientRect();
-  const pct  = (e.clientX - rect.left) / rect.width;
-  const dur  = ytPlayer.getDuration();
-  if (dur) ytPlayer.seekTo(pct * dur);
-});
-
+// ──────────────────────────────────────────────────────────────────────────────
+// AUDIO PLAYER UI HELPERS
+// ──────────────────────────────────────────────────────────────────────────────
 function setPlayUI(playing) {
   isPlaying = playing;
   if (playing) {
-    playIcon.classList.add('hidden');
-    pauseIcon.classList.remove('hidden');
+    playIcon?.classList.add('hidden');
+    pauseIcon?.classList.remove('hidden');
   } else {
-    pauseIcon.classList.add('hidden');
-    playIcon.classList.remove('hidden');
+    pauseIcon?.classList.add('hidden');
+    playIcon?.classList.remove('hidden');
   }
 }
 
@@ -253,22 +251,23 @@ function stopProgressPoll() {
 function updateProgress() {
   if (!ytPlayer || !ytReady) return;
   try {
-    const curr = ytPlayer.getCurrentTime();
-    const dur  = ytPlayer.getDuration();
+    const curr = ytPlayer.getCurrentTime() || 0;
+    const dur  = ytPlayer.getDuration()    || 0;
     if (!dur) return;
 
     const pct = (curr / dur) * 100;
-    progressFill.style.width  = pct + '%';
-    progressThumb.style.left  = pct + '%';
-    currentTimeEl.textContent = formatTime(curr);
-    totalTimeEl.textContent   = formatTime(dur);
-  } catch(e) {}
+    if (progressFill)  progressFill.style.width = pct + '%';
+    if (progressThumb) progressThumb.style.left  = pct + '%';
+    if (currentTimeEl) currentTimeEl.textContent = formatTime(curr);
+    if (totalTimeEl)   totalTimeEl.textContent   = formatTime(dur);
+  } catch (e) { /* ignore */ }
 }
 
 function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${String(s).padStart(2, '0')}`;
+  const s = Math.floor(seconds);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${String(sec).padStart(2, '0')}`;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -281,19 +280,22 @@ function initScrollReveal() {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Stagger children in the same parent
-          const siblings = entry.target.parentElement
-            ? Array.from(entry.target.parentElement.querySelectorAll('.reveal-on-scroll'))
-            : [entry.target];
-          const idx = siblings.indexOf(entry.target);
-          entry.target.style.transitionDelay = `${idx * 0.12}s`;
           entry.target.classList.add('revealed');
           observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
   );
+
+  // Stagger reveals within each section
+  const sections = mainSite.querySelectorAll('.section');
+  sections.forEach((sec) => {
+    const items = sec.querySelectorAll('.reveal-on-scroll');
+    items.forEach((el, i) => {
+      el.style.transitionDelay = `${i * 0.12}s`;
+    });
+  });
 
   elements.forEach((el) => observer.observe(el));
 }
