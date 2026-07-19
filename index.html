@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vikas & Savita | 25th Silver Jubilee Anniversary</title>
+  <meta name="description" content="You are cordially invited to celebrate the 25th Silver Jubilee Anniversary of Vikas & Savita at Lauriant Resort, Patiala on November 21st, 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cormorant+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       SECTION 0: LANDING / ENVELOPE GATE SCREEN
+       ============================================================ -->
+  <div id="landing-screen" class="landing-screen">
+
+    <!-- Blurred ambient background -->
+    <div class="landing-bg"></div>
+
+    <!-- Names above envelope -->
+    <div class="landing-names-header scroll-reveal-landing fade-up-landing">
+      <h1 class="script-name landing-couple-name">Vikas <span class="amp">&</span> Savita</h1>
+      <p class="landing-occasion">Silver Jubilee · 25 Years of Love</p>
+    </div>
+
+    <!-- The Envelope -->
+    <div class="envelope-wrapper" id="envelope-wrapper">
+      <div class="envelope-scene" id="envelope-scene">
+
+        <!-- Envelope body (closed state) -->
+        <div class="env-body">
+          <!-- Back panel -->
+          <div class="env-back-panel"></div>
+
+          <!-- Flap (opens on click) -->
+          <div class="env-flap" id="env-flap"></div>
+
+          <!-- Front triangles (left & right bottom V) -->
+          <div class="env-bottom-left"></div>
+          <div class="env-bottom-right"></div>
+          <div class="env-bottom-center"></div>
+
+          <!-- Wax seal on flap -->
+          <div class="env-wax-seal" id="env-wax-seal">
+            <img src="assets/wax_seal.jpg" alt="Wax Seal" class="seal-img">
+          </div>
+        </div>
+
+        <!-- The invitation card peeking out (slides up on open) -->
+        <div class="env-card-peek" id="env-card-peek">
+          <div class="peek-card-inner">
+            <p class="peek-small-caps">Silver Jubilee Celebration</p>
+            <h3 class="peek-script-name">Vikas & Savita</h3>
+            <p class="peek-date">21 · 11 · 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tap to Open instruction -->
+    <p class="tap-to-open" id="tap-to-open">TAP TO OPEN</p>
+
+    <!-- Guest personalisation block -->
+    <div class="landing-guest-block">
+      <p class="landing-with-love">— You Are Cordially Invited —</p>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       MAIN SCROLLABLE INVITATION CONTENT
+       ============================================================ -->
+  <main id="main-site" class="main-site hidden">
+
+    <!-- ── A. COUNTDOWN HERO ── -->
+    <section class="section countdown-section" id="countdown-section">
+      <div class="section-inner countdown-inner">
+
+        <h2 class="script-name countdown-script">Time Left</h2>
+
+        <div class="countdown-grid" id="countdown-grid">
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-days">000</span>
+            <span class="countdown-label">Days</span>
+          </div>
+          <div class="countdown-sep">:</div>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-hours">00</span>
+            <span class="countdown-label">Hours</span>
+          </div>
+          <div class="countdown-sep">:</div>
+          <div class="countdown-unit">
+            <span class="countdown-num" id="cd-minutes">00</span>
+            <span class="countdown-label">Minutes</span>
+          </div>
+        </div>
+
+        <div class="countdown-divider-row">
+          <span class="divider-line"></span>
+          <span class="countdown-until-label">UNTIL OUR BIG DAY</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <!-- Calla lily botanical transition -->
+        <div class="botanical-transition">
+          <img src="assets/calla_lily.jpg" alt="Calla lilies" class="calla-lily-img reveal-on-scroll">
+        </div>
+      </div>
+    </section>
+
+    <!-- ── B. ENVELOPE REVEAL / NAMES CARD ── -->
+    <section class="section envelope-reveal-section" id="envelope-reveal-section">
+      <div class="section-inner">
+
+        <!-- Open envelope with floral interior -->
+        <div class="open-envelope-wrap reveal-on-scroll">
+          <img src="assets/open_envelope.jpg" alt="Open envelope with floral lining" class="open-env-img">
+          <!-- Trailing calla lily on flap -->
+          <div class="env-lily-accent">
+            <img src="assets/calla_lily.jpg" alt="Calla lily accent" class="env-lily-img">
+          </div>
+        </div>
+
+        <!-- Ornate plaque / die-cut invitation card -->
+        <div class="plaque-card reveal-on-scroll">
+          <div class="plaque-inner">
+            <p class="small-caps-label">WE ARE HONORED TO INVITE YOU TO THE</p>
+            <p class="small-caps-label">25TH ANNIVERSARY CELEBRATION OF</p>
+            <div class="plaque-divider"></div>
+            <h2 class="script-name plaque-names">Vikas <span class="amp">&</span> Savita</h2>
+            <div class="plaque-divider"></div>
+            <p class="plaque-location">Patiala, India</p>
+            <p class="plaque-date-text">21 · 11 · 2026</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── C. OUR SONG ── -->
+    <section class="section song-section" id="song-section">
+      <div class="section-inner song-inner">
+
+        <!-- Botanical accent -->
+        <div class="song-lily">
+          <img src="assets/calla_lily.jpg" alt="Calla lily" class="song-lily-img reveal-on-scroll">
+        </div>
+
+        <p class="small-caps-label song-label reveal-on-scroll">PRESS PLAY TO HEAR OUR SONG</p>
+
+        <!-- Song title -->
+        <div class="song-title-block reveal-on-scroll">
+          <p class="song-track-name">Wang Da Naap</p>
+          <p class="song-artist">Ammy Virk</p>
+        </div>
+
+        <!-- Custom audio player -->
+        <div class="audio-player-wrap reveal-on-scroll" id="audio-player-wrap">
+
+          <!-- Progress bar -->
+          <div class="audio-progress-bar" id="audio-progress-bar">
+            <div class="audio-progress-fill" id="audio-progress-fill"></div>
+            <div class="audio-progress-thumb" id="audio-progress-thumb"></div>
+          </div>
+
+          <!-- Time display -->
+          <div class="audio-time-row">
+            <span class="audio-time" id="audio-current-time">0:00</span>
+            <span class="audio-time" id="audio-total-time">0:00</span>
+          </div>
+
+          <!-- Playback controls -->
+          <div class="audio-controls">
+            <button class="audio-btn" id="btn-prev" aria-label="Previous">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button class="audio-btn audio-btn-play" id="btn-play-pause" aria-label="Play / Pause">
+              <svg viewBox="0 0 24 24" fill="currentColor" id="play-icon"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" id="pause-icon" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="audio-btn" id="btn-next" aria-label="Next">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+          </div>
+
+          <!-- Hidden YouTube iframe for audio playback -->
+          <div id="yt-player-container" style="display:none;">
+            <div id="yt-player"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── D. EVENT DETAILS ── -->
+    <section class="section details-section" id="details-section">
+      <div class="section-inner details-inner">
+
+        <!-- Polaroid style couple photo (uses hero image) -->
+        <div class="polaroid-stack reveal-on-scroll">
+          <div class="polaroid polaroid-back">
+            <img src="assets/hero_anniversary.png" alt="Vikas & Savita" class="polaroid-img">
+          </div>
+          <div class="polaroid polaroid-front">
+            <img src="assets/resort_cover.png" alt="Lauriant Resort" class="polaroid-img">
+            <p class="polaroid-caption">Lauriant Resort</p>
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="details-card reveal-on-scroll">
+
+          <!-- Evening Celebration -->
+          <div class="detail-section-block">
+            <h3 class="script-name detail-section-title">The Celebration</h3>
+            <p class="detail-venue-name">Lauriant Resort</p>
+            <p class="detail-venue-address">Sirhind Road, Near Bypass<br>Patiala, Punjab 147001</p>
+            <a href="https://maps.app.goo.gl/CdQrVHtJbZ2pRctn7" target="_blank" rel="noopener" class="location-pill-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="loc-pin-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Location
+            </a>
+            <p class="detail-time">Time: 7:00 PM Onwards</p>
+            <p class="detail-date-line">Saturday, 21st November 2026</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── E. DRESS CODE ── -->
+    <section class="section dress-section" id="dress-section">
+      <div class="section-inner dress-inner">
+
+        <div class="dress-layout">
+
+          <!-- Left: Text card + badge -->
+          <div class="dress-text-side reveal-on-scroll">
+            <div class="dress-text-card">
+              <p class="small-caps-label dress-attire-label">FORMAL EVENING ATTIRE.</p>
+              <p class="dress-attire-desc">Ladies in elegant traditional or formal gowns, Gentlemen in suits or traditional formals.</p>
+            </div>
+            <div class="dress-badge-wrap">
+              <div class="dress-badge">
+                <span class="dress-badge-script">Dress</span>
+                <span class="dress-badge-caps">CODE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: fashion sketch -->
+          <div class="dress-sketch-side reveal-on-scroll">
+            <img src="assets/dress_code.jpg" alt="Formal attire illustration" class="dress-sketch-img">
+          </div>
+
+        </div>
+
+        <!-- Calla lily accent -->
+        <div class="dress-lily reveal-on-scroll">
+          <img src="assets/calla_lily.jpg" alt="Calla lily" class="dress-lily-img">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── F. GIFTS / BLESSINGS ── -->
+    <section class="section gifts-section" id="gifts-section">
+      <div class="section-inner gifts-inner">
+
+        <!-- Wax seal -->
+        <div class="gifts-seal reveal-on-scroll">
+          <img src="assets/wax_seal.jpg" alt="Wax seal" class="gifts-seal-img">
+        </div>
+
+        <!-- Gift message -->
+        <div class="gifts-message reveal-on-scroll">
+          <p class="gifts-text">
+            <span class="gifts-drop-cap">Y</span>our company is what matters most to us. Should you wish to give a gift, it would be received with much love and gratitude.
+          </p>
+        </div>
+
+        <!-- Gifts circular badge -->
+        <div class="gifts-badge reveal-on-scroll">
+          <span class="gifts-badge-script">Gifts</span>
+        </div>
+
+        <!-- Calla lily botanical -->
+        <div class="gifts-lily reveal-on-scroll">
+          <img src="assets/calla_lily.jpg" alt="Calla lily" class="gifts-lily-img">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── G. FOOTER ── -->
+    <footer class="footer-section">
+      <div class="footer-inner">
+        <div class="footer-ornament">
+          <span class="ornament-line"></span>
+          <span class="ornament-diamond">✦</span>
+          <span class="ornament-line"></span>
+        </div>
+        <h3 class="script-name footer-couple-name">Vikas & Savita</h3>
+        <p class="small-caps-label footer-tagline">25 YEARS OF LOVE · NOVEMBER 21, 2026</p>
+        <p class="footer-with-love">WITH MUCH LOVE,</p>
+        <p class="footer-confirm">WE'D BE GRATEFUL IF YOU COULD JOIN US ON OUR BIG DAY</p>
+        <div class="footer-ornament">
+          <span class="ornament-line"></span>
+          <span class="ornament-diamond">✦</span>
+          <span class="ornament-line"></span>
+        </div>
+        <p class="footer-credit">Made with love by Mohit & Kamakshi</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js"></script>
+</body>
+</html>
